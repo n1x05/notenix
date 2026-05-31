@@ -288,3 +288,30 @@ tabs:
         title: VSCodium
         subtitle: "Code editor"
         default: false
+
+  - id: native-apps
+    title: Native Apps
+    description: "Nixpkgs packages installed natively — profiles are restorable via Nextcloud"
+    type: bool_options
+    save_cmd: set-features
+    items:
+      - key: notenix.applications.native.enable
+        id: nativeApps
+        const: NATIVE_APPS
+        title: Native apps
+        subtitle: "Enable native (non-Flatpak) app support"
+        default: false
+
+      - key: notenix.applications.native.chromium
+        id: nativeChromium
+        const: NATIVE_CHROMIUM
+        title: Chromium (native)
+        subtitle: "Chromium from nixpkgs — profile synced via Nextcloud"
+        default: false
+
+      - key: notenix.applications.native.firefox
+        id: nativeFirefox
+        const: NATIVE_FIREFOX
+        title: Firefox (native)
+        subtitle: "Firefox from nixpkgs — profile synced via Nextcloud"
+        default: false

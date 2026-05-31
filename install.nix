@@ -23,6 +23,7 @@ pkgs.writeShellApplication {
     pkgs.gnugrep
     pkgs.gnused
     pkgs.ncurses      # clear
+    pkgs.nextcloud-client  # nextcloudcmd — restore machine.nix from cloud
   ];
 
   text = ''
@@ -173,6 +174,43 @@ pkgs.writeShellApplication {
       --yesno "$MSG" 20 65 </dev/tty >/dev/tty || { clear; echo "Cancelled."; exit 1; }
     clear
 
+    # ── 8b. Optional Nextcloud restore ───────────────────────────────
+    NC_MACHINE_NIX=""
+    dialog \
+      --backtitle "$BACKTITLE" \
+      --title "Nextcloud restore (optional)" \
+      --yesno "Do you want to restore machine.nix from Nextcloud?\n\nThis will fetch your existing config so you don't have to reconfigure manually." \
+      10 65 </dev/tty >/dev/tty && NC_WANT_RESTORE=yes || NC_WANT_RESTORE=no
+    clear
+
+    if [ "$NC_WANT_RESTORE" = yes ]; then
+      NC_URL=$(pick "Nextcloud URL" \
+        --inputbox "Enter your Nextcloud server URL (e.g. https://cloud.example.com):" 8 65 "")
+      NC_USER=$(pick "Nextcloud username" \
+        --inputbox "Enter your Nextcloud username:" 8 50 "")
+      NC_PASS=$(pick "Nextcloud app password" \
+        --passwordbox "Enter an app password (Settings → Security → App passwords):" 9 65 "")
+      clear
+
+      NC_FETCH_DIR="$TMP/nc_fetch"
+      mkdir -p "$NC_FETCH_DIR"
+      echo "→ Fetching machine.nix from Nextcloud…"
+      if nextcloudcmd \
+           --user "$NC_USER" \
+           --password "$NC_PASS" \
+           --path "notenix/$HOSTNAME" \
+           --exclude-hidden \
+           "$NC_FETCH_DIR" \
+           "$NC_URL" 2>/dev/null \
+         && [ -f "$NC_FETCH_DIR/machine.nix" ]; then
+        NC_MACHINE_NIX="$NC_FETCH_DIR/machine.nix"
+        echo "  ✓ Found machine.nix in Nextcloud — will use it after partitioning."
+      else
+        echo "  ✗ machine.nix not found in Nextcloud — will write from installer answers."
+      fi
+      sleep 2
+    fi
+
     # ── 9. Write machine-specific flake and config ───────────────────
     mkdir -p "$TMP/etc/nixos"
 
@@ -205,6 +243,13 @@ FLAKE
   system.stateVersion                    = "25.11";
 }
 EOF
+
+    # If Nextcloud restore found a machine.nix, overwrite the generated one.
+    # The restored file already contains the correct hostname/user/disk values.
+    if [ -n "$NC_MACHINE_NIX" ]; then
+      echo "→ Using restored machine.nix from Nextcloud."
+      cp "$NC_MACHINE_NIX" "$TMP/etc/nixos/machine.nix"
+    fi
 
     LOCAL_FLAKE="path:$TMP/etc/nixos#notenix"
 
