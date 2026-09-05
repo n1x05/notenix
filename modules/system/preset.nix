@@ -16,6 +16,7 @@ let
   desktopOptions = {
     notenix.desktop.gnome.enable        = true;
     notenix.applications.flatpak.enable = true;
+    services.snap.enable                = true;
     notenix.hardware.sound.enable       = true;
     notenix.hardware.bluetooth.enable   = true;
     notenix.hardware.printing.enable    = true;
@@ -24,6 +25,7 @@ let
   desktopLiteOptions = {
     notenix.desktop.cinnamon.enable     = true;
     notenix.applications.flatpak.enable = true;
+    services.snap.enable               = true;
     notenix.hardware.sound.enable       = true;
     notenix.hardware.bluetooth.enable   = true;
     notenix.hardware.printing.enable    = true;

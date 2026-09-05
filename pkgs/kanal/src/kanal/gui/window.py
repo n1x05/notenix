@@ -284,6 +284,7 @@ class ChannelWindow(Adw.Window):
 
         extensions_state = set(backend.read_extensions())
         apps_state       = set(backend.read_apps())
+        snaps_state      = set(backend.read_snaps())
         is_experimental  = features_state.get("notenix.features.experimental", False)
 
         for tab in backend.get_tab_catalog():
@@ -319,7 +320,7 @@ class ChannelWindow(Adw.Window):
                     row = Adw.SwitchRow()
                     row.set_title(_(item["title"]))
                     row.set_subtitle(_(item["subtitle"]))
-                    row.set_active(item["id"] in active_ids)
+                    row.set_active(item["id"] in (snaps_state if item.get("source") == "snap" else active_ids))
                     group.add(row)
                     rows[item["id"]] = row
 
@@ -848,7 +849,17 @@ class ChannelWindow(Adw.Window):
             if tab["type"] == "bool_options":
                 payload[tab["id"]] = {key: row.get_active() for key, row in rows.items()}
             else:
-                payload[tab["id"]] = [k for k, row in rows.items() if row.get_active()]
+                payload[tab["id"]] = [k for k, row in rows.items()
+                                      if row.get_active() and not next(
+                                          (item.get("source") == "snap"
+                                           for item in tab["items"] if item["id"] == k),
+                                          False)]
+                if tab["id"] == "apps":
+                    payload["snaps"] = [k for k, row in rows.items()
+                                        if row.get_active() and next(
+                                            (item.get("source") == "snap"
+                                             for item in tab["items"] if item["id"] == k),
+                                            False)]
         ext_sources: dict[str, str] = {}
         if "extensions" in payload:
             for ext_id, (combo, src_ids, item) in self._ext_source_rows.items():

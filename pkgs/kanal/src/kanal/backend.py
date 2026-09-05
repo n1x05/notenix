@@ -20,6 +20,7 @@ from kanal.constants import (
     TAB_CATALOG,
     FLAKE_REPO,
     KEY_FLATPAK_PACKAGES,
+    KEY_SNAP_PACKAGES,
     KEY_GNOME_EXTENSIONS,
     KEY_HOSTNAME,
     KEY_KBLAYOUT,
@@ -58,6 +59,7 @@ from kanal.nixfiles import read_status, set_channel
 from kanal.machine import (
     read_features, read_machine, save_features, save_machine,
     read_apps, save_apps,
+    read_snaps, save_snaps,
     read_extensions, save_extensions,
     read_extension_sources, read_extension_source_hashes, save_extension_sources,
 )
@@ -77,7 +79,7 @@ __all__ = [
     "ALL_FEATURES", "DRY_RUN", "EXT_SOURCE_ITEMS", "FEATURE_CATALOG", "FLAKE_REPO", "TAB_CATALOG",
     *[f"KEY_FEATURE_{f['const']}" for f in FEATURE_CATALOG],
     "get_feature_catalog", "get_tab_catalog",
-    "KEY_FLATPAK_PACKAGES", "KEY_GNOME_EXTENSIONS",
+    "KEY_FLATPAK_PACKAGES", "KEY_SNAP_PACKAGES", "KEY_GNOME_EXTENSIONS",
     # constants — machine keys (YAML-derived)
     "KEY_HOSTNAME", "KEY_KBLAYOUT", "KEY_LOCALE", "KEY_OP", "KEY_PRESET",
     "KEY_STATEVERSION", "KEY_TIMEZONE", "KEY_USERDESC", "KEY_USERNAME",
@@ -87,9 +89,9 @@ __all__ = [
     # nixfiles
     "read_status", "set_channel",
     # machine
-    "read_apps", "read_extensions", "read_extension_sources", "read_extension_source_hashes",
+    "read_apps", "read_snaps", "read_extensions", "read_extension_sources", "read_extension_source_hashes",
     "read_features", "read_machine",
-    "save_apps", "save_extensions", "save_extension_sources", "save_features", "save_machine",
+    "save_apps", "save_snaps", "save_extensions", "save_extension_sources", "save_features", "save_machine",
     # locales
     "kbd_default_for_locale", "list_kbd_layouts", "list_locales",
     # privileged

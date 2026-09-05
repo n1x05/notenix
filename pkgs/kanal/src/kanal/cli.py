@@ -145,11 +145,14 @@ def _cmd_save_all(args: argparse.Namespace) -> int:
             if value is not None:
                 tab_args[tab["save_cmd"]] = value
     settings    = _collect_machine(args)
+    snaps      = args.snaps
     ext_sources = json.loads(args.ext_sources_json or "{}")
     ext_hashes  = json.loads(args.ext_hashes_json  or "{}")
     try:
         for save_cmd, data in tab_args.items():
             _TAB_SAVE_FN[save_cmd](data)
+        if snaps is not None:
+            backend.save_snaps(snaps)
         if settings:
             backend.save_machine(settings)
         if ext_sources or ext_hashes:
@@ -255,6 +258,8 @@ def build_parser() -> argparse.ArgumentParser:
     sa.add_argument("--operation", choices=["boot", "switch"], default=None)
     sa.add_argument("--preset",    default=None)
     sa.add_argument("--flake-url", dest="flake_url", default=None)
+    sa.add_argument("--snaps", nargs="*", default=None, metavar="SNAP",
+                    help="Snap package names (replaces current list; omit to leave unchanged)")
     sa.add_argument("--ext-sources-json", dest="ext_sources_json", default=None,
                     help="JSON object mapping nix_source_key to source id")
     sa.add_argument("--ext-hashes-json",  dest="ext_hashes_json",  default=None,

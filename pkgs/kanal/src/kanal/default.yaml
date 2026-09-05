@@ -218,6 +218,23 @@ tabs:
         subtitle: "Web browser"
         default: false
 
+      - id: com.google.Chrome
+        title: Google Chrome
+        subtitle: "Web browser"
+        default: false
+
+      - id: chromium
+        title: Chromium (Snap)
+        subtitle: "Web browser from the Snap Store"
+        default: false
+        source: snap
+
+      - id: ms-solitaire
+        title: Microsoft Solitaire
+        subtitle: "Microsoft Solitaire from Windows XP (Snap)"
+        default: false
+        source: snap
+
       - id: com.github.tchx84.Flatseal
         title: Flatseal
         subtitle: "Manage Flatpak permissions"

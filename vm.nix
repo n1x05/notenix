@@ -1,6 +1,6 @@
 # vm.nix — VM nixosConfiguration for `nix run .#vm`
 # Imported by flake.nix as nixosConfigurations.vm.
-{ lib, nixpkgs, system, kanal }:
+{ lib, nixpkgs, nix-snapd, system, kanal }:
 let
   # Single source of truth for VM identity — reused in both vmOverrides
   # and the seeded /etc/nixos/machine.nix activation script below.
@@ -79,6 +79,7 @@ let
 
   vmBaseModules = [
     ./modules
+    nix-snapd.nixosModules.default
     ./hosts/notenix/configuration.nix
     "${nixpkgs}/nixos/modules/virtualisation/qemu-vm.nix"
     vmOverrides

@@ -211,6 +211,16 @@ def save_apps(app_ids: list[str]) -> None:
     _save_list_key(_const.KEY_FLATPAK_PACKAGES, app_ids, "apps")
 
 
+def read_snaps() -> list[str]:
+    """Return the configured Snap package names from machine.nix."""
+    return _read_list_key(_const.KEY_SNAP_PACKAGES)
+
+
+def save_snaps(app_ids: list[str]) -> None:
+    """Write Snap package names to machine.nix (must be called as root)."""
+    _save_list_key(_const.KEY_SNAP_PACKAGES, app_ids, "snaps")
+
+
 def read_extensions() -> list[str]:
     """Return the list of enabled GNOME extension IDs from machine.nix (no root required)."""
     return _read_list_key(_const.KEY_GNOME_EXTENSIONS)

@@ -61,6 +61,7 @@ for _f in FEATURE_CATALOG:
 
 # list_option nix keys — derived from YAML nix_key fields
 KEY_FLATPAK_PACKAGES: str = _TABS_BY_ID["apps"]["nix_key"]
+KEY_SNAP_PACKAGES: str = "notenix.applications.snap.packages"
 KEY_GNOME_EXTENSIONS: str = _TABS_BY_ID["extensions"]["nix_key"]
 
 # Extension items that expose selectable package sources

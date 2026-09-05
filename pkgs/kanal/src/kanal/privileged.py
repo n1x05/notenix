@@ -124,6 +124,9 @@ def pkexec_save_all_stream(payload: dict, rebuild: bool = False):
             cmd += [flag, payload["machine"][key]]
     ext_sources = payload.get("ext_sources", {})
     ext_hashes  = payload.get("ext_hashes",  {})
+    snaps = payload.get("snaps")
+    if snaps is not None:
+        cmd += ["--snaps", *snaps]
     if ext_sources:
         cmd += ["--ext-sources-json", json.dumps(ext_sources)]
     if ext_hashes:

@@ -6,17 +6,20 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     disko.url   = "github:nix-community/disko/latest";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+    nix-snapd.url = "github:nix-community/nix-snapd";
+    nix-snapd.inputs.nixpkgs.follows = "nixpkgs";
     kanal.url   = "path:pkgs/kanal";
     kanal.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, disko, kanal, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, disko, nix-snapd, kanal, ... }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
       baseModules = [
         self.nixosModules.default
         disko.nixosModules.disko
+        nix-snapd.nixosModules.default
         ./hosts/notenix/configuration.nix
         ./hosts/notenix/disk.nix
         { environment.systemPackages = [ self.packages.${system}.kanal ]; }
@@ -65,7 +68,7 @@
           # Full GNOME VM: requires a display (QEMU GTK or VNC)
           # Run with:  nix run .#vm
           vm = import ./vm.nix {
-            inherit lib nixpkgs system;
+            inherit lib nixpkgs nix-snapd system;
             kanal = self.packages.${system}.kanal;
           };
         };
