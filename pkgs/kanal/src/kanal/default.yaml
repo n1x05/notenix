@@ -124,6 +124,13 @@ tabs:
         subtitle: "OpenSSH -- password auth, root login disabled"
         default: false
 
+      - key: notenix.features.powerOffLauncher
+        id: powerOffLauncher
+        const: POWER_OFF_LAUNCHER
+        title: Power Off launcher
+        subtitle: "Add a Power Off icon to the desktop dock"
+        default: false
+
       - key: notenix.features.steam
         id: steam
         const: STEAM

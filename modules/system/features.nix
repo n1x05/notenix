@@ -17,6 +17,12 @@ in
       description = "Enable OpenSSH server (password auth, root login disabled).";
     };
 
+    powerOffLauncher = mkOption {
+      type        = types.bool;
+      default     = false;
+      description = "Add a Power Off launcher to the desktop dock.";
+    };
+
     kiosk = mkOption {
       type        = types.bool;
       default     = false;

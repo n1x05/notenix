@@ -64,7 +64,7 @@ in
         "firefox.desktop"
         "org.gnome.Nautilus.desktop"
         "org.gnome.Calculator.desktop"
-      ];
+      ] ++ lib.optional config.notenix.features.powerOffLauncher "notenix-poweroff.desktop";
       description = "Dock favourite apps (desktop file IDs).";
     };
 
