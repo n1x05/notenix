@@ -13,6 +13,10 @@ let
       fi
     done
   '';
+  solitaireLauncher = pkgs.writeShellScriptBin "ms-solitaire-launcher" ''
+    exec /run/current-system/sw/bin/snap run --shell ms-solitaire -c \
+      'RUN_EXE=/snap/ms-solitaire/current/sol.exe /snap/ms-solitaire/current/bin/sommelier run-exe'
+  '';
 in
 {
   options.notenix.applications.snap = {
@@ -27,7 +31,8 @@ in
   config = lib.mkIf (cfg.packages != []) {
     services.snap.enable = true;
 
-    environment.systemPackages = lib.optional (builtins.elem "ms-solitaire" cfg.packages)
+    environment.systemPackages = lib.optionals (builtins.elem "ms-solitaire" cfg.packages) [
+      solitaireLauncher
       (pkgs.writeTextFile {
         name = "ms-solitaire-desktop-entry";
         destination = "/share/applications/ms-solitaire.desktop";
@@ -35,14 +40,15 @@ in
           [Desktop Entry]
           Name=Microsoft Solitaire
           Comment=Microsoft Solitaire from Windows XP
-          Exec=snap run ms-solitaire
+          Exec=ms-solitaire-launcher
           Icon=applications-games
           Terminal=false
           Type=Application
           Categories=Game;CardGame;
           StartupNotify=true
         '';
-      });
+      })
+    ];
 
     systemd.services."notenix-install-snaps" = {
       description = "Install notenix Snap applications";
