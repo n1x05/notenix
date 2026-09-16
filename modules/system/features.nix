@@ -23,6 +23,12 @@ in
       description = "Add a Power Off launcher to the desktop dock.";
     };
 
+    fmRadio = mkOption {
+      type        = types.bool;
+      default     = false;
+      description = "Install and enable the Cinnamon FM Radio applet.";
+    };
+
     kiosk = mkOption {
       type        = types.bool;
       default     = false;
@@ -93,6 +99,10 @@ in
         enable32Bit = true;
       };
     }
+
+    (mkIf cfg.fmRadio {
+      notenix.desktop.cinnamon.applets.fmRadio.enable = true;
+    })
 
     (mkIf cfg.ssh {
       services.openssh = {

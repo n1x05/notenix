@@ -131,6 +131,13 @@ tabs:
         subtitle: "Add a Power Off icon to the desktop dock"
         default: false
 
+      - key: notenix.features.fmRadio
+        id: fmRadio
+        const: FM_RADIO
+        title: FM Radio
+        subtitle: "Cinnamon panel applet for internet radio stations"
+        default: false
+
       - key: notenix.features.steam
         id: steam
         const: STEAM
