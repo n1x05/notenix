@@ -1,9 +1,19 @@
-## Unreleased
+## v0.9.0 (2026-11-13)
 
 ### Feat
 
+- [cinnamon] fm radio applet add
+- [desktop] add power off shortcut in the dock
+- [snap] ms-solitaire fix for launcher
+- [snap] add snaps to notenix
+- manual install guide, exclude extensions if full desktop is not installed (#7)
+- [input] update all
 - update flake.lock
 - update flake.lock, minor fix for nix flake check
+
+### Fix
+
+- [kanal] saveing change / tabs
 
 ### Refactor
 
