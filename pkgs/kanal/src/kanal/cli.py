@@ -124,11 +124,17 @@ def _collect_tab_data(tab: dict, args: argparse.Namespace):
     return getattr(args, tab["id"]) or []  # list_option
 
 
-def _make_tab_handler(tab: dict):
+def _make_tab_handler(tabs: list[dict]):
     def handler(args: argparse.Namespace) -> int:
-        return _save_and_rebuild(_TAB_SAVE_FN[tab["save_cmd"]],
-                                 _collect_tab_data(tab, args),
-                                 f"{tab['title']} saved.", args)
+        data = {}
+        for tab in tabs:
+            tab_data = _collect_tab_data(tab, args)
+            if isinstance(tab_data, dict):
+                data.update(tab_data)
+            else:
+                data = tab_data
+        return _save_and_rebuild(_TAB_SAVE_FN[tabs[0]["save_cmd"]], data,
+                                 "Settings saved.", args)
     return handler
 
 
@@ -139,7 +145,7 @@ def _cmd_save_all(args: argparse.Namespace) -> int:
         if tab["type"] == "bool_options":
             json_val = getattr(args, f"{tab['id']}_json", None)
             if json_val is not None:
-                tab_args[tab["save_cmd"]] = json.loads(json_val)
+                tab_args.setdefault(tab["save_cmd"], {}).update(json.loads(json_val))
         else:
             value = getattr(args, tab["id"], None)
             if value is not None:
@@ -229,19 +235,26 @@ def build_parser() -> argparse.ArgumentParser:
     m.set_defaults(func=_cmd_set_machine)
 
     # set-features / set-apps / set-extensions — generated from TAB_CATALOG
+    registered_save_commands = set()
     for tab in backend.TAB_CATALOG:
-        tp = sub.add_parser(tab["save_cmd"],
-                            help=f"Set {tab['title'].lower()} (requires root)")
-        if tab["type"] == "bool_options":
-            for feat in tab["items"]:
-                flag = feat["id"].replace("_", "-")
-                tp.add_argument(f"--{flag}",    dest=feat["id"], action="store_true",  default=None)
-                tp.add_argument(f"--no-{flag}", dest=feat["id"], action="store_false")
-        else:  # list_option
-            tp.add_argument(tab["id"], nargs="*", metavar="ID",
-                            help=f"{tab['title']} IDs (replaces current list; omit all to clear)")
+        save_cmd = tab["save_cmd"]
+        if save_cmd in registered_save_commands:
+            continue
+        registered_save_commands.add(save_cmd)
+        command_tabs = [candidate for candidate in backend.TAB_CATALOG
+                        if candidate["save_cmd"] == save_cmd]
+        tp = sub.add_parser(save_cmd, help=f"Set {save_cmd[4:].replace('-', ' ')} (requires root)")
+        for command_tab in command_tabs:
+            if command_tab["type"] == "bool_options":
+                for feat in command_tab["items"]:
+                    flag = feat["id"].replace("_", "-")
+                    tp.add_argument(f"--{flag}",    dest=feat["id"], action="store_true",  default=None)
+                    tp.add_argument(f"--no-{flag}", dest=feat["id"], action="store_false")
+            else:  # list_option
+                tp.add_argument(command_tab["id"], nargs="*", metavar="ID",
+                                help=f"{command_tab['title']} IDs (replaces current list; omit all to clear)")
         tp.add_argument("--rebuild", action="store_true", help="Run nixos-rebuild after saving")
-        tp.set_defaults(func=_make_tab_handler(tab))
+        tp.set_defaults(func=_make_tab_handler(command_tabs))
 
     # save-all
     sa = sub.add_parser("save-all", help="Save all settings atomically (requires root)")
